@@ -1,14 +1,9 @@
 #! /usr/bin/ruby
 
-
-
-
 require 'pp'
 
 $debug = nil
 $coins = [100, 50, 25, 10, 5]
-#$coins = [100, 50]
-# $coins = [10, 5]
 $limit = 4
 
 class CoinSet
@@ -16,6 +11,7 @@ class CoinSet
   def initialize(input_array)
     raise "failure, wrong length, #{input_array}" unless input_array.length == 5
     array = input_array.dup
+    # In retrospect, I shouldn't have done this. I should have just left it internally stored as an array.
     @dollars = input_array[0]
     @halves  = input_array[1]
     @quarters= input_array[2]
@@ -82,36 +78,18 @@ class CoinSet
   end
 
   def self.find_minimum_from_pair_of_sets(aa,bb)
-    min_length = 99999
+    min_length = nil
     result = []
     
     aa.each { |a|
       bb.each { |b|
         cs = CoinSet.from_two(a,b)
-        result = cs if (cs.length) < min_length
+        result = cs if (cs.length) < min_length || min_length.nil?
       }
     }
     result
   end
 
-  def self.all_combinations(*sets)
-    input = *sets;
-    prod = sets.inject(1) { |p,a| p * a.length } 
-    prod.times { |p|
-      args = []
-      index = p
-      input.each { |array|
-        quotient = index  / array.length # /**/
-        remainder = index % array.length
-        args << array[remainder]
-        index = quotient
-      }
-      pp args
-    }
-  end
-    
-    
-  
   def self.find_minimum_from_N_sets(*sets)
     input = *sets;
 
@@ -126,42 +104,30 @@ class CoinSet
     prod.times { |p|
       args = []
       index = p
- #     puts "p is #{p}, index is #{index}"
       input.each { |array|
         quotient = index  / array.length # /* */
         remainder = index % array.length
         args << array[remainder]
         index = quotient
-#        puts "after #{array.length}, quotient is #{quotient} and index is #{index}"
       }
       cs = CoinSet.from_N(*args)
       result = cs if (cs.length) < min_length
     }
     result
   end
-
-
 end
 
 
 
 def coins(coins, count, value)
-#  puts "..... coins is #{coins}"
   ret = [ ]
-  # done
   return ret if count.zero? || coins.empty?
-  # this coin is too big
-  # return coins(coins.drop(1), count, value) if coins[0] > value
-  #
   this_value = coins[0]
-#  puts "this_value is #{this_value}"
-  
   if coins.length == 1
     # return whatever value is left, as long as it fits. Assume no fractions here
     c = value / this_value
     if (c <= count)
       return [ [c] ]
-#      return [ ["#{c} of #{this_value}c"] ]
     else
       return ret
     end
@@ -170,7 +136,6 @@ def coins(coins, count, value)
   0.upto(count) { |n|
     p "#{n} of #{count}, #{this_value}c" if $debug
     if n * this_value == value
-#      puts "************************"
       val = ["#{n} of #{this_value}c", * coins(coins.drop(1), 0, 0) ]
       val = [n] + [0] * (coins.length - 1)
       ret << val
@@ -189,7 +154,6 @@ def coins(coins, count, value)
     sub.each { |s|
       new_answer = ["#{n} of #{this_value}c"].concat(s)
       new_answer = [n] + s
-#      puts "passing up new answer, #{new_answer}"
       ret << new_answer
     }
   }
