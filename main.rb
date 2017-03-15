@@ -68,7 +68,7 @@ if :test_condition_one
   puts "length is #{result3.length}"
 end
 
-# bads are 13,18,19,20, 23+. Those can never have 4 coins because of either C1 or C2.
+# bads are 13,18,19,20, 23+. Those can never have 4 coins because of either C1 or C2. If you don't believe me, add them.
 # To try something easier, try list = [1,2,3,4,5,6,7];
 list = [1,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,21,22];
 combos = list.combination(5).to_a
